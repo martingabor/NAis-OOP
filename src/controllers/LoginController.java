@@ -75,7 +75,7 @@ public class LoginController implements Initializable, ScreenSwitcher {
 	        String currPassword = rset.getString("password");
 
 	        if (nickname.equals(currNickname) && password.equals(currPassword)) {
-	        		activeUser  = new Student(2, currNickname, rset.getString("first_name"), rset.getString("last_name"), rset.getInt("id_gender"), rset.getString("date_of_birth"), rset.getString("city"), rset.getString("address"));
+	        		activeUser  = new Student(rset.getInt("id"), currNickname, rset.getString("first_name"), rset.getString("last_name"), rset.getInt("id_gender"), rset.getString("date_of_birth"), rset.getString("city"), rset.getString("address"));
 	            	return true;
 	        }			
 		} catch (SQLException e) {
@@ -86,7 +86,7 @@ public class LoginController implements Initializable, ScreenSwitcher {
 
 
 	public void setActiveUser(int user_id, String nickname, String first_name, String last_name, int gender, String date_of_birth, String city, String address) {
-		this.activeUser = new Student(user_id, nickname, first_name, last_name, gender, date_of_birth, city, address);
+		LoginController.activeUser = new Student(user_id, nickname, first_name, last_name, gender, date_of_birth, city, address);
 	}
 
 	public User getActiveUser() {
@@ -94,7 +94,7 @@ public class LoginController implements Initializable, ScreenSwitcher {
 	}
 
 	public void setActiveUser(User activeUser) {
-		this.activeUser = activeUser;
+		LoginController.activeUser = activeUser;
 	}
 
 

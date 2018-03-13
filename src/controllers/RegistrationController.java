@@ -74,6 +74,8 @@ public class RegistrationController implements Initializable, ScreenSwitcher {
 		registerButton.fire();
 	}
 	
+	
+	
 	public static void registerUser(String nickname, String password1, String password2, 
 			String first_name, String last_name, String gender, LocalDate birthDate,
 			String city, String address) throws EmptyRegistrationFieldsException {

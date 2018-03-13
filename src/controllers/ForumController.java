@@ -4,15 +4,25 @@ import java.io.IOException;
 import java.net.URL;
 import java.sql.Connection;
 import java.sql.DriverManager;
+import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.sql.Statement;
+import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
+import java.time.format.DateTimeFormatter;
 import java.util.Calendar;
+import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.ResourceBundle;
+import java.util.Set;
 
 import javafx.animation.Animation;
 import javafx.animation.KeyFrame;
 import javafx.animation.Timeline;
+import javafx.collections.FXCollections;
+import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
 import javafx.fxml.FXMLLoader;
 import javafx.fxml.Initializable;
@@ -20,17 +30,25 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
+import javafx.scene.control.ListCell;
+import javafx.scene.control.ListView;
 import javafx.scene.control.TextArea;
 import javafx.scene.control.TextField;
+import javafx.scene.layout.StackPane;
+import javafx.scene.text.Text;
 import javafx.stage.Stage;
+import javafx.util.Callback;
 import javafx.util.Duration;
+import other.Comment;
 import users.*;
 
 public class ForumController implements Initializable, ScreenSwitcher {
 	@FXML
-	private TextArea chatOutput;
+	private ListView<String> listView;
 	@FXML
-	private TextField chatInput;
+	private TextArea textInput;
+	@FXML
+	private TextField titleInput;
 	@FXML
 	private Button sendButton;
 	@FXML
@@ -39,21 +57,29 @@ public class ForumController implements Initializable, ScreenSwitcher {
 	private Label timeLabel;
 	
 	private User activeUser;
-	private int second;
-	private int minute;
-	private int hour;
+	
+	
+    DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-hh HH:mm:ss");
+	private ObservableList<String> returnList = FXCollections.observableArrayList();
+	
+	private Set<String> stringSet;
+	ObservableList<String> observableList = FXCollections.observableArrayList();
+
 	
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		
+        listView.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
+            @Override
+            public ListCell<String> call(final ListView<String> list) {
+                return new ForumCell(list);
+            }
+        });
+			
 		Timeline clock = new Timeline(new KeyFrame(Duration.ZERO, e ->  {
-			Calendar cal = Calendar.getInstance();
-			 second = cal.get(Calendar.SECOND);
-			 minute = cal.get(Calendar.MINUTE);
-		     hour = cal.get(Calendar.HOUR_OF_DAY);
 		    
-		    timeLabel.setText(((hour < 10) ? "0" + hour : hour) + ":" + ((minute < 10) ? "0" + minute : minute) + ":" + ((second < 10) ? "0" + second : second));
+		    timeLabel.setText(LocalDateTime.now().format(dtf));
 		}),
 			new KeyFrame(Duration.seconds(1))
 		);
@@ -61,12 +87,24 @@ public class ForumController implements Initializable, ScreenSwitcher {
 		clock.setCycleCount(Animation.INDEFINITE);
 		clock.play();
 		
+		textInput.setWrapText(true);
+	
+		loadComments();
+		Collections.reverse(returnList);
+
+
+	    listView.setItems(returnList);
 		
-		chatOutput.setEditable(false);
+
 		
+
 		sendButton.setOnAction(event -> {
-			chatOutput.appendText(timeLabel.getText() + " " + this.getActiveUser().getNickname() + ": " + chatInput.getText() + "\n");
-			chatInput.clear();
+			addComment();
+			//items.add(timeLabel.getText() + " " + this.getActiveUser().getNickname() + ": " + chatInput.getText() + "\n");
+			//listView.setItems(items);
+			
+			textInput.clear();
+			titleInput.clear();
 		});
 		
 		backButton.setOnAction(event -> {
@@ -75,6 +113,36 @@ public class ForumController implements Initializable, ScreenSwitcher {
 		});
 		
 	}
+	
+	private void addComment() {
+		try {
+			Connection connection;
+			connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/NAis","postgres","admin");
+			Statement stmt = connection.createStatement();
+			
+			
+			stmt.executeUpdate("insert into comments (id_user, datetime, title, comment_text) values (" + activeUser.getUser_id() +",'" + timeLabel.getText() + "' , '" + titleInput.getText() + "' , '" + textInput.getText() + "');"); 
+			
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	private void loadComments() {
+		Comment comment;
+		try {
+			Connection connection;
+			connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/NAis","postgres","admin");
+			Statement stmt = connection.createStatement();
+			ResultSet rset = stmt.executeQuery("select u.nickname, c.datetime, c.title, c.comment_text from comments c join users u on u.id=c.id_user");
+			while(rset.next()) {
+				comment = new Comment(rset.getString("nickname"),rset.getString("datetime"),rset.getString("title"),rset.getString("comment_text"));
+				returnList.add(comment.displayAsString());
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
+	
 	
 	public void sendButtonAction() {
 		sendButton.fire();
@@ -94,7 +162,8 @@ public class ForumController implements Initializable, ScreenSwitcher {
 	public User getActiveUser() {
 		return activeUser;
 	}
-
+	
+	
 
 
 }
