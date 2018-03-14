@@ -38,7 +38,7 @@ public class Comment {
 		return getNickname() + " " + getDatetime() + "\n" +getTitle() + "\n" +getText();
 	}
 
-	private String getNickname() {
+	public String getNickname() {
 		return nickname;
 	}
 	
@@ -46,6 +46,8 @@ public class Comment {
 		this.nickname = nickname;
 		
 	}
+	
+	
 
 	public String getTitle() {
 		return title;

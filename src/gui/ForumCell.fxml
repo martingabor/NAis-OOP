@@ -1,10 +1,41 @@
- <?import controllers.ForumCellController?>
- <?import javafx.scene.layout.HBox?>
- <?import javafx.scene.control.Label?>
+<?xml version="1.0" encoding="UTF-8"?>
+<?import controllers.ForumCellController?>
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.SplitPane?>
+<?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.text.Font?>
 
-<HBox xmlns:fx="http://javafx.com/fxml" fx:id="hBox">
-<children>
-    <Label  fx:id="label1" layoutX="6.0" layoutY="6.0" prefHeight="100" prefWidth="120"/>
-    <Label  fx:id="label2" layoutX="6.0"  layoutY="6.0" prefHeight="100" prefWidth="120"/>
-</children>
-</HBox>
+<SplitPane fx:id="commentPane" dividerPositions="0.25" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" orientation="VERTICAL" prefHeight="146.0" prefWidth="555.0"  xmlns:fx="http://javafx.com/fxml/1">
+  <items>
+    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="160.0">
+         <children>
+            <Label fx:id="nicknameLabel" alignment="CENTER_RIGHT" contentDisplay="RIGHT" layoutY="-1.0" prefHeight="32.0" prefWidth="135.0" text="Nickname">
+               <font>
+                  <Font name="Kefa Regular" size="14.0" />
+               </font>
+            </Label>
+            <Label fx:id="timeLabel" layoutX="135.0" prefHeight="32.0" prefWidth="117.0" text="Time">
+               <font>
+                  <Font name="Kefa Regular" size="13.0" />
+               </font>
+               <padding>
+                  <Insets left="5.0" />
+               </padding>
+            </Label>
+            <Label fx:id="titleLabel" contentDisplay="RIGHT" layoutX="283.0" prefHeight="32.0" prefWidth="135.0" text="Title">
+               <font>
+                  <Font name="Kefa Regular" size="14.0" />
+               </font>
+            </Label>
+         </children></AnchorPane>
+    <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="100.0" prefWidth="555.0">
+         <children>
+            <Label fx:id="commentTextLabel" alignment="TOP_LEFT" layoutY="-1.0" prefHeight="104.0" prefWidth="555.0" text="commentText" >
+            		<padding>
+                  <Insets left="2.0" />
+               </padding>
+            </Label>
+         </children></AnchorPane>
+  </items>
+</SplitPane>

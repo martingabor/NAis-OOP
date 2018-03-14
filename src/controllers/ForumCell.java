@@ -8,26 +8,20 @@ import javafx.scene.control.ListCell;
 import javafx.scene.control.ListView;
 import javafx.scene.text.Text;
 import javafx.util.Callback;
+import other.Comment;
 
-public final class ForumCell extends ListCell<String> {
+public final class ForumCell extends ListCell<Comment> {
 	
 
-	  public ForumCell(ListView<String> list) {
-		super();
-		Text text = new Text();
-        text.wrappingWidthProperty().bind(list.widthProperty().subtract(15));
-        text.textProperty().bind(itemProperty());
-
-        setPrefWidth(0);
-        setGraphic(text);
-        
-	}
+	  public ForumCell(ListView<Comment> list) {
+		super();        
+	  }
 	  
 	    private final ForumCellController ccc = new ForumCellController();
 	    private final Node view = ccc.getBox();
 
 	    @Override
-	    protected void updateItem(String item, boolean empty) {
+	    protected void updateItem(Comment item, boolean empty) {
 	        super.updateItem(item, empty);
 	        if (empty) {
 	            setGraphic(null);

@@ -11,41 +11,54 @@ import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.scene.control.Label;
 import javafx.scene.control.ListView;
+import javafx.scene.control.SplitPane;
 import javafx.scene.layout.HBox;
+import javafx.scene.layout.VBox;
 import javafx.stage.Stage;
 import other.Comment;
 
-public class ForumCellController {
+public class ForumCellController  {
 	
-	  @FXML
-	    private HBox hBox;
+	   @FXML
+	    private SplitPane commentPane;
 	    @FXML
-	    private Label label1;
+	    private Label nicknameLabel;
 	    @FXML
-	    private Label label2;
+	    private Label timeLabel;
+	    @FXML
+	    private Label titleLabel;
+	    @FXML
+	    private Label commentTextLabel;
 
-	    public ForumCellController() {
-	    	 	FXMLLoader loaderoo = new FXMLLoader(getClass().getResource("../gui/ForumCell.fxml"));
-	    	 	loaderoo.setController(this);
+
+		public ForumCellController() {
+	    	 	FXMLLoader loader = new FXMLLoader(getClass().getResource("../gui/ForumCell.fxml"));
+	    	 	loader.setController(this);	
 	    	 	
 	    	try {
-				loaderoo.load();					
+				loader.load();					
 				
 			} catch (IOException e) {
 				throw new RuntimeException();
-			}	   
+			}	
+	    	
+    	 	commentTextLabel.setWrapText(true);
+
 	    	
 	    }
 
-	    public void setInfo(String string)
+	    public void setInfo(Comment item)
 	    {
-	        label1.setText(string);
-	        label2.setText(string);
+	        nicknameLabel.setText(item.getNickname());
+	        timeLabel.setText(item.getDatetime());
+	        titleLabel.setText(item.getTitle());
+	        commentTextLabel.setText(item.getText());
+	        
 	    }
 
-	    public HBox getBox()
+	    public SplitPane getBox()
 	    {
-	        return hBox;
+	        return commentPane;
 	    }
 	    
 

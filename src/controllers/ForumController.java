@@ -11,6 +11,7 @@ import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.time.format.DateTimeFormatter;
+import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
@@ -44,7 +45,7 @@ import users.*;
 
 public class ForumController implements Initializable, ScreenSwitcher {
 	@FXML
-	private ListView<String> listView;
+	private ListView<Comment> listView;
 	@FXML
 	private TextArea textInput;
 	@FXML
@@ -60,19 +61,17 @@ public class ForumController implements Initializable, ScreenSwitcher {
 	
 	
     DateTimeFormatter dtf = DateTimeFormatter.ofPattern("yyyy-MM-hh HH:mm:ss");
-	private ObservableList<String> returnList = FXCollections.observableArrayList();
+	private ObservableList<Comment> listViewContent = FXCollections.observableArrayList();
 	
-	private Set<String> stringSet;
-	ObservableList<String> observableList = FXCollections.observableArrayList();
 
 	
 	
 	@Override
 	public void initialize(URL location, ResourceBundle resources) {
 		
-        listView.setCellFactory(new Callback<ListView<String>, ListCell<String>>() {
+        listView.setCellFactory(new Callback<ListView<Comment>, ListCell<Comment>>() {
             @Override
-            public ListCell<String> call(final ListView<String> list) {
+            public ListCell<Comment> call(final ListView<Comment> list) {
                 return new ForumCell(list);
             }
         });
@@ -90,18 +89,21 @@ public class ForumController implements Initializable, ScreenSwitcher {
 		textInput.setWrapText(true);
 	
 		loadComments();
-		Collections.reverse(returnList);
+		Collections.reverse(listViewContent);
 
 
-	    listView.setItems(returnList);
+	    listView.setItems(listViewContent);
 		
 
 		
 
 		sendButton.setOnAction(event -> {
+			
+			Collections.reverse(listViewContent);
+			listViewContent.add(new Comment(activeUser.getNickname(), timeLabel.getText(), titleInput.getText(), textInput.getText()));
+			Collections.reverse(listViewContent);
+		
 			addComment();
-			//items.add(timeLabel.getText() + " " + this.getActiveUser().getNickname() + ": " + chatInput.getText() + "\n");
-			//listView.setItems(items);
 			
 			textInput.clear();
 			titleInput.clear();
@@ -120,7 +122,6 @@ public class ForumController implements Initializable, ScreenSwitcher {
 			connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/NAis","postgres","admin");
 			Statement stmt = connection.createStatement();
 			
-			
 			stmt.executeUpdate("insert into comments (id_user, datetime, title, comment_text) values (" + activeUser.getUser_id() +",'" + timeLabel.getText() + "' , '" + titleInput.getText() + "' , '" + textInput.getText() + "');"); 
 			
 		} catch (SQLException e) {
@@ -136,7 +137,7 @@ public class ForumController implements Initializable, ScreenSwitcher {
 			ResultSet rset = stmt.executeQuery("select u.nickname, c.datetime, c.title, c.comment_text from comments c join users u on u.id=c.id_user");
 			while(rset.next()) {
 				comment = new Comment(rset.getString("nickname"),rset.getString("datetime"),rset.getString("title"),rset.getString("comment_text"));
-				returnList.add(comment.displayAsString());
+				listViewContent.add(comment);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
