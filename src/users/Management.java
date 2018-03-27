@@ -7,5 +7,7 @@ public class Management extends User {
 		super(user_id, nickname, first_name, last_name, gender, date_of_birth, city, address);
 		// TODO Auto-generated constructor stub
 	}
+	
+	
 
 }

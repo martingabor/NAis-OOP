@@ -1,7 +1,15 @@
 package users;
 
+import java.sql.Connection;
+import java.sql.DriverManager;
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.sql.Statement;
 
-public class User {
+import controllers.ScreenSwitcher;
+import javafx.stage.Stage;
+
+public class User implements ScreenSwitcher {
 	private int user_id;
 	private String first_name;
 	private String last_name;
@@ -26,6 +34,62 @@ public class User {
 		this.setAddress(address);
 	}
 	
+	public User(Stage stage, String nickname, String password) {
+		this.setNickname(nickname);
+		logIn(stage, password);
+		
+	}
+	
+	private void logIn(Stage stage, String password) {
+		if (checkLogin(this.nickname, password)) {
+			switchToForumScreen(stage, this);
+		} else {
+			System.out.println("Wrong nickname or password!");
+		}
+	}
+	
+	private boolean checkLogin(String nickname, String password) {
+		if (nickname.isEmpty() || password.isEmpty()) {
+			return false;
+		}
+		try {
+			Connection connection = DriverManager.getConnection("jdbc:postgresql://localhost:5432/NAis", "postgres",
+					"admin");
+			Statement stmt = connection.createStatement();
+
+			ResultSet rset = stmt.executeQuery(
+					"select id, nickname, password, first_name, last_name, id_gender, date_of_birth, city, address from users where nickname = '"
+							+ nickname + "'");
+			if (rset.next()) {
+				String currNickname = rset.getString("nickname");
+				String currPassword = rset.getString("password");
+
+				if (nickname.equals(currNickname) && password.equals(currPassword)) {
+					this.setUser_id(rset.getInt("id"));
+					this.setNickname(currNickname);
+					this.setFirst_name(rset.getString("first_name"));
+					this.setLast_name(rset.getString("last_name"));
+					int gender = rset.getInt("id_gender");
+					if (gender == 1) {
+						this.setGender("MALE");
+					} else if (gender == 2) {
+						this.setGender("FEMALE");
+					}
+					this.setDate_of_birth(rset.getString("date_of_birth"));
+					this.setCity(rset.getString("city"));
+					this.setAddress(rset.getString("address"));
+					
+					return true;
+				}
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+		return false;
+	}
+	public void print() {
+		System.out.println("som user");
+	}
 	
 	public String getLast_name() {
 		return last_name;
